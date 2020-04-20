@@ -39,7 +39,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     EditText txtLatInicio,txtLongInicio,txtLatFinal,txtLongFinal;
-    private List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String, String>>>();
+
     JsonObjectRequest jsonObjectRequest;
     RequestQueue request;
 
@@ -64,88 +64,12 @@ public class MainActivity extends AppCompatActivity {
                 Utilidades.coordenadas.setLatitudFinal(Double.valueOf(txtLatFinal.getText().toString()));
                 Utilidades.coordenadas.setLongitudFinal(Double.valueOf(txtLongFinal.getText().toString()));
 
-                /*webServiceObtenerRuta(txtLatInicio.getText().toString(),txtLongInicio.getText().toString(),
-                        txtLatFinal.getText().toString(),txtLongFinal.getText().toString());*/
-                //Toast.makeText(getApplicationContext(),routes.toString(),Toast.LENGTH_LONG).show();
+
                 Intent miIntent=new Intent(MainActivity.this, MapsActivity.class);
-                /*Var var=new Var(Utilidades.routes,Utilidades.coordenadas);
-                Bundle bundle=new Bundle();
-                bundle.putSerializable("var",var);
-                miIntent.putExtra("bun",bundle);*/
                 startActivity(miIntent);
 
             }
         });
-
-        request= Volley.newRequestQueue(getApplicationContext());
-    }
-
-    private void webServiceObtenerRuta(String latitudInicial, String longitudInicial, String latitudFinal, String longitudFinal) {
-
-        String url="https://maps.googleapis.com/maps/api/directions/json?origin="+latitudInicial+","+longitudInicial
-                +"&destination="+latitudFinal+","+longitudFinal+"&key="+"AIzaSyC69im735dRrG4LtHyxduqr6bifbDSPOBY";
-
-        //Toast.makeText(this,url,Toast.LENGTH_LONG).show();
-        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                //Este método PARSEA el JSONObject que retorna del API de Rutas de Google devolviendo
-                //una lista del lista de HashMap Strings con el listado de Coordenadas de Lat y Long,
-                //con la cual se podrá dibujar pollinas que describan la ruta entre 2 puntos.
-                JSONArray jRoutes = null;
-                JSONArray jLegs = null;
-                JSONArray jSteps = null;
-
-                try {
-
-                    jRoutes = response.getJSONArray("routes");
-
-                    /** Traversing all routes */
-                    for(int i=0;i<jRoutes.length();i++){
-                        jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
-                        List<HashMap<String, String>> path = new ArrayList<HashMap<String, String>>();
-                        //Toast.makeText(getApplicationContext(), jLegs.toString(),Toast.LENGTH_LONG).show();
-                        /** Traversing all legs */
-                        for(int j=0;j<jLegs.length();j++){
-                            jSteps = ( (JSONObject)jLegs.get(j)).getJSONArray("steps");
-                            //Toast.makeText(getApplicationContext(),jSteps.toString(),Toast.LENGTH_LONG).show();
-                            /** Traversing all steps */
-                            for(int k=0;k<jSteps.length();k++){
-                                String polyline = "";
-                                polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
-                                List<LatLng> list = decodePoly(polyline);
-
-                                /** Traversing all points */
-                                for(int l=0;l<list.size();l++){
-                                    HashMap<String, String> hm = new HashMap<String, String>();
-                                    hm.put("lat", Double.toString(((LatLng)list.get(l)).latitude) );
-                                    hm.put("lng", Double.toString(((LatLng)list.get(l)).longitude) );
-                                    path.add(hm);
-                                    //Toast.makeText(getApplicationContext(),path.toString(),Toast.LENGTH_LONG).show();
-                                }
-                            }
-                            Utilidades.routes.add(path);
-                            routes=Utilidades.routes;
-                            //Toast.makeText(getApplicationContext(),routes.toString(),Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }catch (Exception e){
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
-                System.out.println();
-                Log.d("ERROR: ", error.toString());
-            }
-        }
-        );
-
-        request.add(jsonObjectRequest);
     }
 
 
@@ -172,47 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });
-           // txtLatInicio.setText("4.543986"); txtLongInicio.setText("-75.666736");
-            //Unicentro
             txtLatFinal.setText("20.1394133"); txtLongFinal.setText("-101.1529094");
-            //Parque del café
-            //  txtLatFinal.setText("4.541396"); txtLongFinal.setText("-75.771741");
+
+
         }
 
-    }
-
-    private List<LatLng> decodePoly(String encoded) {
-
-        List<LatLng> poly = new ArrayList<LatLng>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
-        }
-
-        return poly;
     }
 
     @Override
