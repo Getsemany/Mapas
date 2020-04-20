@@ -1,6 +1,7 @@
 package com.example.mapas;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 
 import com.android.volley.Request;
@@ -9,9 +10,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -149,7 +153,26 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
 
         if (view.getId()==R.id.btnObtenerCoordenadas){
-            txtLatInicio.setText("4.543986"); txtLongInicio.setText("-75.666736");
+            FusedLocationProviderClient fusedLocationClient;
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // Logic to handle location object
+                                txtLatInicio.setText(String.valueOf(location.getLatitude()));
+                                txtLongInicio.setText(location.getLongitude()+"");
+                                // Toast.makeText(MainActivity.this, msj,
+                                //       Toast.LENGTH_LONG).show();
+                                //   Log.i("MiUbi", msj);
+                            }else {Log.i("MiUbi", "Sin ubicaciòn ");}
+
+                        }
+                    });
+           // txtLatInicio.setText("4.543986"); txtLongInicio.setText("-75.666736");
             //Unicentro
             txtLatFinal.setText("20.1394133"); txtLongFinal.setText("-101.1529094");
             //Parque del café

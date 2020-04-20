@@ -115,21 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return poly;
     }
 
-
-
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     GoogleMap map;
-    Boolean posicionActual=true;
+
     JSONObject jso;
     Double longitudOri, latitudOri;
 
@@ -139,17 +126,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         map = googleMap;
 
         map.setMyLocationEnabled(true);
-        map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-            @Override
-            public void onMyLocationChange(Location location) {
 
 
-                //20.0282742,-100.7256648
+//Escuela 20.1308284,-101.1221918
+                    latitudOri = Utilidades.coordenadas.getLatitudInicial();
+                    longitudOri = Utilidades.coordenadas.getLongitudInicial();
 
-                if (posicionActual){
-                    latitudOri = location.getLatitude();
-                    longitudOri = location.getLongitude();
-                    posicionActual=false;
 
                     LatLng miPosicion = new LatLng(latitudOri,longitudOri);
 
@@ -188,10 +170,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
 
                     queue.add(stringRequest);
-                }
 
-            }
-        });
+
 
 
     }
@@ -217,7 +197,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String polyline = ""+((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
                         Log.i("end", ""+polyline);
                         List<LatLng> list = decodePoly(polyline);
-                        map.addPolyline(new PolylineOptions().addAll(list).color(Color.GRAY).width(5));
+                        map.addPolyline(new PolylineOptions().addAll(list).color(Color.BLUE).width(10));
 
                     }
                 }
